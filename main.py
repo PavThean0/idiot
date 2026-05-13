@@ -3,10 +3,18 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-load_dotenv()
+# Only load .env if it exists (local dev), Railway uses system envs directly
+if os.path.exists(".env"):
+    load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
-LOG_CHANNEL_ID = int(os.getenv("LOG_CHANNEL_ID"))
+# Safer loading for the ID to prevent the NoneType crash
+LOG_ID_RAW = os.getenv("LOG_CHANNEL_ID")
+LOG_CHANNEL_ID = int(LOG_ID_RAW) if LOG_ID_RAW else None
+
+if not TOKEN or not LOG_CHANNEL_ID:
+    print("❌ ERROR: Missing DISCORD_TOKEN or LOG_CHANNEL_ID in environment variables!")
+
 
 intents = discord.Intents.default()
 intents.message_content = True
